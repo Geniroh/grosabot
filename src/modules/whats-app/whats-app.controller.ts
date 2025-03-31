@@ -67,6 +67,7 @@ export class WhatsAppController {
     @Query('hub.verify_token') token: string,
     @Query('hub.challenge') challenge: string,
   ): string {
+    console.log(' I WAS HIT ');
     const isVerified = this.whatsAppService.verifyWebhook(mode, token);
 
     if (isVerified) {
@@ -81,6 +82,7 @@ export class WhatsAppController {
   @Post('webhook')
   @HttpCode(HttpStatus.OK)
   async handleWebhook(@Body() body: any): Promise<void> {
+    console.log(' I WAS HIT ');
     this.logger.log('Received webhook payload');
 
     try {
