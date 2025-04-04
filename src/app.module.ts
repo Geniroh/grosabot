@@ -7,6 +7,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HttpModule } from '@nestjs/axios';
 import { ClientCertificateMiddleware } from './middleware/client-certficate.middleware';
+import { ChatModule } from 'src/modules/chat/chat.module';
+import { GeminiModule } from './modules/gemini/gemini.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { ClientCertificateMiddleware } from './middleware/client-certficate.midd
     HttpModule,
     UserModule,
     WhatsAppModule,
+    ChatModule,
+    GeminiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
