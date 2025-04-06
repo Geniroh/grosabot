@@ -7,12 +7,17 @@ import {
   UserOnboarding,
   UserOnboardingSchema,
 } from './schema/user-onboarding.schema';
+import {
+  UserComplaint,
+  UserComplaintSchema,
+} from 'src/modules/user/schema/user-complaint.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: UserOnboarding.name, schema: UserOnboardingSchema },
+      { name: UserComplaint.name, schema: UserComplaintSchema },
     ]),
   ],
   controllers: [UserController],

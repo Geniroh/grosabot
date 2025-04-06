@@ -129,4 +129,107 @@ export class GeminiService {
       return 'I’m currently experiencing issues. Please try again later.';
     }
   }
+
+  async askAMedicalComplaintQuestion(
+    complaintHistory: string[],
+    complaint: string,
+  ): Promise<string> {
+    const formattedHistory = complaintHistory.slice(-20).join('\n');
+
+    const prompt = `You are a WhatsApp chatbot assisting users with health-related queries.
+      A user is making a medical complaint. Your goal is to ask at most two meaningful follow-up question if needed, based on the user's message and previous messages.
+      If the user has already provided sufficient information, simply reply with:
+      "No further questions at the moment."
+
+    Chat History:
+    ${formattedHistory}
+
+    User Message: ${complaint}
+
+    Reply:`;
+
+    const apiUrl = `${this.apiUrlBase}/${this.modelName}:generateContent?key=${this.apiKey}`;
+
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService.post(
+          apiUrl,
+          {
+            contents: [
+              {
+                parts: [{ text: prompt }],
+              },
+            ],
+            generationConfig: {
+              maxOutputTokens: 100,
+            },
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        ),
+      );
+
+      const reply =
+        data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ||
+        'I’m sorry, but I don’t have a response for that at the moment.';
+
+      return reply;
+    } catch (error) {
+      console.error('Gemini API Error:', error.response?.data || error.message);
+      return 'I’m currently experiencing issues. Please try again later.';
+    }
+  }
+
+  async evaluateVitalSign(message: string): Promise<string> {
+    const prompt = `
+    You are a WhatsApp chatbot assisting users with health-related queries about vital signs like blood pressure, heart rate, temperature, and blood sugar levels etc.
+
+      A user provided information about these parameters, and I want you to:
+      1. State whether each parameter appears to be within a generally healthy range or potentially concerning.
+      2. If there is need to talk with a physician, please suggest they reply with "Yes talk to doctor".
+
+      If BMI parameters (height in cm and weight in kg) are sent, please calculate the BMI and state the user's BMI category.
+
+      User Message: ${message}
+
+      Reply:
+    `;
+
+    const apiUrl = `${this.apiUrlBase}/${this.modelName}:generateContent?key=${this.apiKey}`;
+
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService.post(
+          apiUrl,
+          {
+            contents: [
+              {
+                parts: [{ text: prompt }],
+              },
+            ],
+            generationConfig: {
+              maxOutputTokens: 100,
+            },
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        ),
+      );
+
+      const reply =
+        data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ||
+        'I’m sorry, but I don’t have a response for that at the moment.';
+
+      return reply;
+    } catch (error) {
+      console.error('Gemini API Error:', error.response?.data || error.message);
+      return 'I’m currently experiencing issues. Please try again later.';
+    }
+  }
 }
